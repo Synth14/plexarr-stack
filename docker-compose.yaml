@@ -62,7 +62,7 @@ services:
       - "32412:32412/udp"
       - "32413:32413/udp"
       - "32414:32414/udp"
-    deploy:
+    deploy: #HW transcode
      resources:
        reservations:
          devices:
@@ -73,8 +73,8 @@ services:
       - TZ=$TZ
       - PLEX_CLAIM=$PLEX_CLAIM
       - HOSTNAME=PlexServer
-      - NVIDIA_VISIBLE_DEVICES=all
-      - NVIDIA_DRIVER_CAPABILITIES=compute,video,utility
+      - NVIDIA_VISIBLE_DEVICES=all #HW transcode
+      - NVIDIA_DRIVER_CAPABILITIES=compute,video,utility #HW transcode
     volumes:
       - /path/to/plexms/config:/config #Change here
       - /path/to/plexms/transcodes:/transcode #Change here
@@ -104,7 +104,7 @@ services:
       - UMASK=022
     volumes:
       - /path/to/radarr/config:/config #Change here
-      - ${PATH_USENET}:/downloads
+      - ${PATH_USENET}:/usenet
       - ${PATH_MEDIA}:/datas
     ports:
       - 7878:7878
@@ -120,7 +120,7 @@ services:
       - UMASK=022
     volumes:
       - /path/to/sonarrV3/config:/config #Change here
-      - ${PATH_USENET}:/downloads
+      - ${PATH_USENET}:/usenet
       - ${PATH_MEDIA}:/datas
     ports:
       - 8989:8989
