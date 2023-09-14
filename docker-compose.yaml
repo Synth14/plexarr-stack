@@ -71,7 +71,7 @@ services:
       - PUID=$PUID
       - PGID=$PGID
       - TZ=$TZ
-      - PLEX_CLAIM=$PLEX_CLAIM
+      - PLEX_CLAIM=$PLEX_CLAIM_TOKEN
       - HOSTNAME=PlexServer
       - NVIDIA_VISIBLE_DEVICES=all #HW transcode
       - NVIDIA_DRIVER_CAPABILITIES=compute,video,utility #HW transcode
