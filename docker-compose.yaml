@@ -1,0 +1,142 @@
+
+##############NETWORKS##############
+networks:
+  default:
+    name: media
+    external: true
+##############NETWORKS##############
+
+services:
+  bazarr: #subtitle grabber
+    image: ghcr.io/linuxserver/bazarr
+    container_name: bazarr
+    environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
+    volumes:
+      - /path/to/bazarr/config:/config #Change here
+      - ${PATH_MEDIA}:/datas
+    ports:
+      - 6767:6767
+    restart: unless-stopped
+    
+  nzbget: #usenet download agent
+    image: ghcr.io/linuxserver/nzbget
+    container_name: nzbget
+    environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
+    volumes:
+      - /path/to/nzbget/config:/config #Change here
+      - ${PATH_USENET}:/downloads
+    ports:
+      - 6789:6789
+    restart: unless-stopped
+
+  overseerr: #media requesting tool
+    image: sctx/overseerr:latest
+    container_name: overseerr
+    environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
+    volumes:
+      - /path/to/overseerr/config:/app/config #Change here
+    ports:
+      - 5055:5055
+    restart: unless-stopped
+
+  plex: # Media Server
+    image: plexinc/pms-docker
+    restart: unless-stopped
+    container_name: plex
+    ports:
+      - "32400:32400/tcp"
+      - "3005:3005/tcp"
+      - "8324:8324/tcp"
+      - "32469:32469/tcp"
+      - "1900:1900/udp"
+      - "32410:32410/udp"
+      - "32412:32412/udp"
+      - "32413:32413/udp"
+      - "32414:32414/udp"
+    deploy:
+     resources:
+       reservations:
+         devices:
+           - capabilities: [gpu]
+    environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
+      - PLEX_CLAIM=$PLEX_CLAIM
+      - HOSTNAME=PlexServer
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,video,utility
+    volumes:
+      - /path/to/plexms/config:/config #Change here
+      - /path/to/plexms/transcodes:/transcode #Change here
+      - ${PATH_MEDIA}:/datas
+
+  prowlarr: #indexer manager for Sonarr & Radarr
+    image: ghcr.io/linuxserver/prowlarr:develop
+    container_name: prowlarr
+    environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
+    volumes:
+      - /path/to/prowlarr/config:/config #Change here
+      - ${PATH_MEDIA}:/datas
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+
+  radarr: #movie search agent
+    image: ghcr.io/linuxserver/radarr
+    container_name: radarr
+    environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
+      - UMASK=022
+    volumes:
+      - /path/to/radarr/config:/config #Change here
+      - ${PATH_USENET}:/downloads
+      - ${PATH_MEDIA}:/datas
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+
+  sonarr: #TV show search agent
+    image: ghcr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
+      - UMASK=022
+    volumes:
+      - /path/to/sonarrV3/config:/config #Change here
+      - ${PATH_USENET}:/downloads
+      - ${PATH_MEDIA}:/datas
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+
+  tautulli: #plex monitoring
+    image: ghcr.io/linuxserver/tautulli:latest
+    container_name: tautulli
+    environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
+      - UMASK=002
+      - DEBUG=no
+    volumes:
+      - /path/to/tautulli/config:/config #Change here
+    ports:
+      - 8181:8181
+    restart: unless-stopped
