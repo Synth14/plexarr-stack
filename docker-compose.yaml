@@ -7,6 +7,21 @@ networks:
 ##############NETWORKS##############
 
 services:
+  plex-meta-manager:
+    image: lscr.io/linuxserver/plex-meta-manager:latest
+    container_name: plex-meta-manager
+    environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
+      - PMM_CONFIG=/config/config.yml #optional
+      - PMM_TIME=03:00 #optional
+      - PMM_RUN=FALSE #optional
+      - PMM_TEST=False #optional
+      - PMM_NO_MISSING=False #optional
+    volumes:
+      - /path/to/PMM/config:/config
+    restart: unless-stopped
   bazarr: #subtitle grabber
     image: ghcr.io/linuxserver/bazarr
     container_name: bazarr
